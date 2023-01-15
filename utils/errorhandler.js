@@ -12,7 +12,7 @@ const handleError = (req, res) => {
     ResStatus = 400;
   }
 
-  res.status(ResStatus).send({ message: `${ResStatus} ${req.err.name}, ${req.err.message}` });
+  res.status(ResStatus).send({ message: req.err.message });
 };
 
 module.exports = { handleError };
