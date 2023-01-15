@@ -1,0 +1,35 @@
+{
+  "name": "express-mesto-gha",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint .",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zzazzky/express-mesto-gha.git"
+  },
+  "keywords": [],
+  "author": "Gerasimova Victoria",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zzazzky/express-mesto-gha/issues"
+  },
+  "homepage": "https://github.com/zzazzky/express-mesto-gha#readme",
+  "description": "",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.26.0",
+    "express": "^4.18.2",
+    "mongoose": "^6.8.3",
+    "nodemon": "^2.0.20"
+  },
+  "devDependencies": {
+    "eslint": "^8.31.0",
+    "eslint-plugin-react": "^7.31.11"
+  }
+}
