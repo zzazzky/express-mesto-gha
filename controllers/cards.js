@@ -23,13 +23,14 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId)
+  Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
         return Promise.reject(new NotFoundError('Публикация не найдена'));
       }
       return res.send(card);
     })
+
     .catch((err) => {
       next(err);
     });
