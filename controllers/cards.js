@@ -1,14 +1,12 @@
 const Card = require('../models/card');
 const NotFoundError = require('../utils/NotFoundError');
 
-const throwNotFoundError = () => Promise.reject(new NotFoundError('Публикация не найдена'));
-
 const getAllCards = (req, res, next) => {
   Card.find({})
+    .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
     .catch((err) => {
-      req.err = err;
-      next();
+      next(err);
     });
 };
 
@@ -17,24 +15,23 @@ const createCard = (req, res, next) => {
   const owner = req.body.user;
 
   Card.create({ name, link, owner })
-    .then((card) => { res.send(card); })
+    .then((card) => Card.findById(card.id).populate(['owner', 'likes']))
+    .then((card) => { res.status(201).send(card); })
     .catch((err) => {
-      req.err = err;
-      next();
+      next(err);
     });
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return throwNotFoundError();
+        return Promise.reject(new NotFoundError('Публикация не найдена'));
       }
       return res.send(card);
     })
     .catch((err) => {
-      req.err = err;
-      next();
+      next(err);
     });
 };
 
@@ -44,15 +41,15 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.body.user._id } },
     { new: true },
   )
+    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        return throwNotFoundError();
+        return Promise.reject(new NotFoundError('Публикация не найдена'));
       }
       return res.send(card);
     })
     .catch((err) => {
-      req.err = err;
-      next();
+      next(err);
     });
 };
 
@@ -62,15 +59,15 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.body.user._id } },
     { new: true },
   )
+    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        return throwNotFoundError();
+        return Promise.reject(new NotFoundError('Публикация не найдена'));
       }
       return res.send(card);
     })
     .catch((err) => {
-      req.err = err;
-      next();
+      next(err);
     });
 };
 

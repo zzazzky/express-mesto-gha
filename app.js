@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const { handleError } = require('./utils/errorhandler');
 
 const { PORT = 3000 } = process.env;
@@ -15,8 +14,8 @@ const NotFoundError = require('./utils/NotFoundError');
 mongoose.set('strictQuery', true);
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/', (req, res, next) => {
   req.body.user = {
@@ -29,12 +28,9 @@ app.use('/', (req, res, next) => {
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
 app.use('/:path', (req, res, next) => {
-  if (!(req.params.path === 'users' || req.params.path === 'cards')) {
-    req.err = new NotFoundError('Страница не найдена');
-    next();
-  }
+  const err = new NotFoundError('Страница не найдена');
+  next(err);
 });
-
 app.use(handleError);
 
 app.listen(PORT);
