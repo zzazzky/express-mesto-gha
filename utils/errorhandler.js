@@ -10,7 +10,7 @@ const handleError = (err, req, res, next) => {
     ResStatus = err.statusCode;
     res.status(ResStatus).send({ message: err.message });
     next();
-  } else if (err instanceof ValidationError || CastError) {
+  } else if (err instanceof ValidationError || err instanceof CastError) {
     ResStatus = 400;
     res.status(ResStatus).send({ message: err.message });
     next();
