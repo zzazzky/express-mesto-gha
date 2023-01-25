@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
+
 const { handleError } = require('./utils/errorhandler');
 
 const { PORT = 3000 } = process.env;
@@ -8,7 +10,12 @@ const app = express();
 
 const userRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
+const auth = require('./middlewares/auth');
 
+const {
+  createUser,
+  login,
+} = require('./controllers/users');
 const NotFoundError = require('./utils/NotFoundError');
 
 mongoose.set('strictQuery', true);
@@ -16,14 +23,12 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-app.use('/', (req, res, next) => {
-  req.body.user = {
-    _id: '63c014b90941ad5cb3524c22',
-  };
+app.post('/signup', createUser);
+app.post('/signin', login);
 
-  next();
-});
+app.use(auth);
 
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);

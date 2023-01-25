@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const NotFoundError = require('../utils/NotFoundError');
+const AuthError = require('../utils/AuthError');
 
 const getAllCards = (req, res, next) => {
   Card.find({})
@@ -12,7 +13,7 @@ const getAllCards = (req, res, next) => {
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
-  const owner = req.body.user;
+  const owner = req.user;
 
   Card.create({ name, link, owner })
     .then((card) => Card.findById(card.id).populate(['owner', 'likes']))
@@ -23,14 +24,18 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
+    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
         return Promise.reject(new NotFoundError('Публикация не найдена'));
       }
-      return res.send(card);
+      if (!(card.owner._id === req.user._id)) {
+        return Promise.reject(new AuthError('Вы не можете удалить чужую публикацию!'));
+      }
+      return Card.findByIdAndRemove(req.params.cardId)
+        .then(() => { res.status(200).send(card); });
     })
-
     .catch((err) => {
       next(err);
     });
@@ -39,7 +44,7 @@ const deleteCard = (req, res, next) => {
 const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.body.user._id } },
+    { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .populate(['owner', 'likes'])
@@ -57,7 +62,7 @@ const likeCard = (req, res, next) => {
 const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: req.body.user._id } },
+    { $pull: { likes: req.user._id } },
     { new: true },
   )
     .populate(['owner', 'likes'])
