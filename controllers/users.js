@@ -104,7 +104,7 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new AuthError('Неправильный e-mail или пароль', 400));
+        return Promise.reject(new AuthError('Неправильный e-mail или пароль', 401));
       }
       return user;
     })
@@ -112,7 +112,7 @@ const login = (req, res, next) => {
       bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new AuthError('Неправильный e-mail или пароль', 400));
+            return Promise.reject(new AuthError('Неправильный e-mail или пароль', 401));
           }
           return user;
         })
