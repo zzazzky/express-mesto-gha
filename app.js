@@ -29,7 +29,7 @@ app.use(cookieParser());
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required(),
-    pssword: Joi.string().required().min(8),
+    password: Joi.string().required().min(8),
   }),
 }), createUser);
 app.post('/signin', login);
