@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const User = require('../models/user');
 const NotFoundError = require('../utils/NotFoundError');
 const AuthError = require('../utils/AuthError');
@@ -48,10 +50,10 @@ const createUser = (req, res, next) => {
       User.create({
         email, name, about, avatar, password: hash,
       })
-        .then((user) => { res.status(201).send(user); });
-    })
-    .catch((err) => {
-      next(err);
+        .then((user) => { res.status(201).send(user); })
+        .catch((err) => {
+          next(err);
+        });
     });
 };
 
@@ -102,7 +104,7 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new AuthError('Неправильный e-mail или пароль'));
+        return Promise.reject(new AuthError('Неправильный e-mail или пароль', 401));
       }
       return user;
     })
@@ -110,12 +112,12 @@ const login = (req, res, next) => {
       bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new AuthError('Неправильный e-mail или пароль'));
+            return Promise.reject(new AuthError('Неправильный e-mail или пароль', 401));
           }
           return user;
         })
         .then(() => {
-          const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+          const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
           return res.cookie('authorization', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send({ message: 'Авторизация успешна!' });
         });
     })

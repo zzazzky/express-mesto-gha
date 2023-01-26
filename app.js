@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-
+const { celebrate, Joi, errors } = require('celebrate');
+require('dotenv').config();
 const { handleError } = require('./utils/errorhandler');
 
 const { PORT = 3000 } = process.env;
@@ -25,13 +26,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.post('/signup', createUser);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required(),
+    pssword: Joi.string().required().min(8),
+  }),
+}), createUser);
 app.post('/signin', login);
 
 app.use(auth);
 
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
+
+app.use(errors());
 app.use((req, res, next) => {
   const err = new NotFoundError('Страница не найдена');
   next(err);
