@@ -30,7 +30,7 @@ const deleteCard = (req, res, next) => {
       if (!card) {
         return Promise.reject(new NotFoundError('Публикация не найдена'));
       }
-      if (!(card.owner._id === req.user._id)) {
+      if (card.owner._id.toString() !== req.user._id.toString()) {
         return Promise.reject(new AuthError('Вы не можете удалить чужую публикацию!', 403));
       }
       return Card.findByIdAndRemove(req.params.cardId)
