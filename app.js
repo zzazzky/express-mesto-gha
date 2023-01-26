@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
-require('dotenv').config();
 const { handleError } = require('./utils/errorhandler');
 
 const { PORT = 3000 } = process.env;
