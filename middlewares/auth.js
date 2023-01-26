@@ -3,13 +3,13 @@ const AuthError = require('../utils/AuthError');
 
 const auth = (req, res, next) => {
   const { authorization } = req.cookies;
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  if (!authorization) {
     next(new AuthError('Необходима авторизация', 401));
   }
-  const token = authorization.replace('Bearer ', '');
+
   let payload;
   try {
-    payload = jwt.verify(token, 'eb28135ebcfc17578f96d4d65b6c7871f2c803be4180c165061d5c2db621c51b');
+    payload = jwt.verify(authorization, 'eb28135ebcfc17578f96d4d65b6c7871f2c803be4180c165061d5c2db621c51b');
   } catch (err) {
     next(new AuthError('Необходима авторизация', 401));
   }
