@@ -13,8 +13,9 @@ router.get('', getAllCards);
 router.post('', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
+    // Ошибка config вызвана \ в регулярном выражении. Если не использовать \, валидация некорректна
     // eslint-disable-next-line
-    link: Joi.string().required().pattern(/https?:\/\/(www\.)?[a-z]+.[a-z]+[a-zA-Z0-9\/\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=]+/),
+    link: Joi.string().required().pattern(/https?:\/\/(www\.)?[a-z]+.[a-z]+[a-zA-Z0-9\/\-\._~:\?#\[\]@!\$&'\(\)\*\+,;=]+/),
   }),
 }), createCard);
 

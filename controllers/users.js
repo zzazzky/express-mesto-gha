@@ -48,13 +48,14 @@ const createUser = (req, res, next) => {
       User.create({
         email, name, about, avatar, password: hash,
       })
-        .then((createdUser) => {
-          User.findById(createdUser._id)
-            .then((user) => { res.status(201).send(user); });
-        })
-        .catch((err) => {
-          next(err);
+        .then(() => {
+          res.status(201).send({
+            email, name, about, avatar,
+          });
         });
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 

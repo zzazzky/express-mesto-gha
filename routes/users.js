@@ -20,8 +20,9 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    // eslint-disable-next-line
-    avatar: Joi.string().pattern(/https?:\/\/(www\.)?[a-z]+.[a-z]+[a-zA-Z0-9\/\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=]+/),
+  // Ошибка config вызвана \ в регулярном выражении. Если не использовать \, валидация некорректна
+  // eslint-disable-next-line
+    avatar: Joi.string().pattern(/https?:\/\/(www\.)?[a-z]+.[a-z]+[a-zA-Z0-9\/\-\._~:\?#\[\]@!\$&'\(\)\*\+,;=]+/),
   }),
 }), updateAvatar);
 
