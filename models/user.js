@@ -34,7 +34,9 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    match: /https?:\/\/(www\.)?[a-z]+.[a-z]+[a-zA-Z0-9\/\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=]+/,
+    // Ошибка config вызвана \ в регулярном выражении. Если не использовать \, валидация некорректна
+    // eslint-disable-next-line
+     match: /https?:\/\/(www\.)?[a-z]+.[a-z]+[a-zA-Z0-9\/\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=]+/,
   },
 });
 

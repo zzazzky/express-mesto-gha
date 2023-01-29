@@ -15,12 +15,8 @@ const getAllUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new NotFoundError('Пользователь не найден'));
-      }
-      return res.send(user);
-    })
+    .orFail(new NotFoundError('Пользователь не найден'))
+    .then((user) => { res.send(user); })
     .catch((err) => {
       next(err);
     });
@@ -28,12 +24,8 @@ const getUserById = (req, res, next) => {
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user)
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new NotFoundError('Пользователь не найден'));
-      }
-      return res.send(user);
-    })
+    .orFail(new NotFoundError('Пользователь не найден'))
+    .then((user) => { res.send(user); })
     .catch((err) => {
       next(err);
     });
@@ -67,12 +59,8 @@ const updateProfile = (req, res, next) => {
     runValidators: true,
     upsert: false,
   })
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new NotFoundError('Пользователь не найден'));
-      }
-      return res.send(user);
-    })
+    .orFail(new NotFoundError('Пользователь не найден'))
+    .then((user) => { res.send(user); })
     .catch((err) => {
       next(err);
     });
@@ -88,12 +76,8 @@ const updateAvatar = (req, res, next) => {
     runValidators: true,
     upsert: false,
   })
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new NotFoundError('Пользователь не найден'));
-      }
-      return res.send(user);
-    })
+    .orFail(new NotFoundError('Пользователь не найден'))
+    .then((user) => { res.send(user); })
     .catch((err) => {
       next(err);
     });
@@ -118,8 +102,11 @@ const login = (req, res, next) => {
           return user;
         })
         .then(() => {
-          const token = jwt.sign({ _id: user._id }, 'eb28135ebcfc17578f96d4d65b6c7871f2c803be4180c165061d5c2db621c51b');
+          const token = jwt.sign({ _id: user._id }, 'dev-key');
           return res.cookie('authorization', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send({ message: 'Авторизация успешна!' });
+        })
+        .catch((err) => {
+          next(err);
         });
     })
     .catch((err) => {

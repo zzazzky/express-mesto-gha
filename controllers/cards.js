@@ -26,10 +26,8 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .populate(['owner', 'likes'])
+    .orFail(new NotFoundError('Публикация не найдена'))
     .then((card) => {
-      if (!card) {
-        return Promise.reject(new NotFoundError('Публикация не найдена'));
-      }
       if (card.owner._id.toString() !== req.user._id.toString()) {
         return Promise.reject(new AuthError('Вы не можете удалить чужую публикацию!', 403));
       }
@@ -48,12 +46,8 @@ const likeCard = (req, res, next) => {
     { new: true },
   )
     .populate(['owner', 'likes'])
-    .then((card) => {
-      if (!card) {
-        return Promise.reject(new NotFoundError('Публикация не найдена'));
-      }
-      return res.send(card);
-    })
+    .orFail(new NotFoundError('Публикация не найдена'))
+    .then((card) => { res.send(card); })
     .catch((err) => {
       next(err);
     });
@@ -66,12 +60,8 @@ const dislikeCard = (req, res, next) => {
     { new: true },
   )
     .populate(['owner', 'likes'])
-    .then((card) => {
-      if (!card) {
-        return Promise.reject(new NotFoundError('Публикация не найдена'));
-      }
-      return res.send(card);
-    })
+    .orFail(new NotFoundError('Публикация не найдена'))
+    .then((card) => { res.send(card); })
     .catch((err) => {
       next(err);
     });
