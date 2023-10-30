@@ -17,6 +17,7 @@ const {
   login,
 } = require('./controllers/users');
 const NotFoundError = require('./utils/NotFoundError');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 mongoose.set('strictQuery', true);
 mongoose.connect('mongodb://localhost:27017/mestodb');
@@ -24,6 +25,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use(requestLogger);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -47,6 +50,8 @@ app.use(auth);
 
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
+
+app.use(errorLogger);
 
 app.use(errors());
 app.use((req, res, next) => {
